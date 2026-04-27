@@ -17,3 +17,21 @@ export default {
     tabIconSelected: tintColorDark,
   },
 };
+
+export const Colors = {
+  primary: '#2D6A4F',
+  primaryLight: '#52B788',
+  primaryDark: '#1B4332',
+
+  warning: '#F4A261',
+  danger: '#E63946',
+  success: '#52B788',
+
+  background: '#F8F9FA',
+  surface: '#FFFFFF',
+  border: '#E9ECEF',
+
+  textPrimary: '#212529',
+  textSecondary: '#6C757D',
+  textLight: '#ADB5BD',
+};
