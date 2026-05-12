@@ -9,7 +9,7 @@ const index = () => {
     const router = useRouter();
     useEffect(() => {
         setTimeout(() => {
-        auth.currentUser == null ? router.push('/(auth)') : router.push('/(noAuth)');
+        auth.currentUser != null ? router.push('/(auth)') : router.push('/(noAuth)');
         }, 2000); // Simulate a loading time of 2 seconds
     }, []);
   return (

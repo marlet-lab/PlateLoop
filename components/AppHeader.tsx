@@ -16,17 +16,19 @@ export default function AppHeader({
     console.log('title:', title); // Log the value of title
     return (
         <View style = {styles.container}>
-            <View style={styles.sideCardLeft}>
-                {canGoBack && (
-                    <Pressable onPress={() => router.back()}>
-                        <Ionicons name="arrow-back" size={24} color="#0D7A5F" />
-                    </Pressable>
-                )}
+            
 
-                <Pressable onPress={() => router.push('/')}>
-                    <Ionicons name="home-outline" size={24} color="#0D7A5F" />
-                </Pressable>
-            </View>
+                <View style={styles.sideCardLeft}>
+                    {canGoBack && (
+                        <Pressable onPress={() => router.back()}>
+                            <Ionicons name="arrow-back" size={24} color="#0D7A5F" />
+                        </Pressable>
+                    )}
+
+                    <Pressable onPress={() => router.push('/')}>
+                        <Ionicons name="home-outline" size={24} color="#0D7A5F" />
+                    </Pressable>
+                </View>
 
             <Text style={styles.title}>{title}</Text>
 
@@ -45,6 +47,7 @@ export default function AppHeader({
 
 const styles = StyleSheet.create({
     container: {
+        color: '#FFFFFF',
         height:100, 
         width: '100%',
         backgroundColor: 'F3F7F5',
@@ -52,15 +55,19 @@ const styles = StyleSheet.create({
         flex: 11,
         alignItems: 'center',
         justifyContent: 'space-between',
+        margin: 40, 
     },
     sideCardLeft: {
         flexDirection: 'row',
+        color: '#93BBB2',
         flex: 2, 
+        gap: 24, 
 
 
     },
     sideCardRight: {
         flexDirection: 'row',
+        color: '#93BBB2',
         flex: 2, 
         gap: 24,
         justifyContent: 'flex-end',
@@ -69,7 +76,7 @@ const styles = StyleSheet.create({
         flex: 7, 
         fontSize: 34,
         fontWeight: '700',
-        color: '#8B7Ae',
+        color: '#93BBB2',
         textAlign: 'center',
     },
 });
