@@ -1,7 +1,7 @@
 
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { auth } from '../config/firebase';
 
 const index = () => {
@@ -14,6 +14,7 @@ const index = () => {
     }, []);
   return (
     <View style = {styles.container}>
+        <Image source={require('../assets/images/logo_1.png')} />
         <ActivityIndicator size="large" color="#0D7A5F" />
         <Text> Loading... </Text>
     </View>
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: 40,
         padding: 20
     },
 });

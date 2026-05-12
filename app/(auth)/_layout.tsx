@@ -6,11 +6,11 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        header: ({ options, navigation }) => (
-          <AppHeader 
-           // title={(options.title as string) || 'PlateLoop'}
+        header: ({ options, navigation, route }) => (
+          <AppHeader
             title={(options.title as string)}
-            canGoBack = {navigation.canGoBack()}
+            canGoBack={navigation.canGoBack()}
+            logoSource={route.name === 'index' ? require('../../assets/images/logo_1.png') : undefined}
           />
         ),
       }}

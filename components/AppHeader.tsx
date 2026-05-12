@@ -1,16 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
 import Card from './Card';
 
 type AppHeaderProps = {
     title: string;
     canGoBack?: boolean;
+    logoSource?: ImageSourcePropType;
 };
 
 export default function AppHeader({
     title,
     canGoBack = false,
+    logoSource,
 }: AppHeaderProps) {
     const router = useRouter();
     return (
@@ -26,7 +28,10 @@ export default function AppHeader({
                 </Pressable>
             </Card>
 
-            <Text style={styles.title}>{title}</Text>
+            {logoSource
+                ? <Image source={logoSource} style={styles.logo} resizeMode="contain" />
+                : <Text style={styles.title}>{title}</Text>
+            }
 
             <Card style={styles.sideCardRight}>
                 <Pressable>
@@ -42,32 +47,34 @@ export default function AppHeader({
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         height: 100,
         width: '100%',
         flexDirection: 'row',
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     sideCardLeft: {
         flexDirection: 'row',
-        flex: 0.8,
         borderTopRightRadius: 0,
         borderBottomLeftRadius: 0,
         borderTopLeftRadius: 0,
     },
     sideCardRight: {
         flexDirection: 'row',
-        flex: 0.8,
         borderTopLeftRadius: 0,
         borderBottomRightRadius: 0,
         borderTopRightRadius: 0,
     },
     title: {
-        flex: 7,
+        flex: 1,
         fontSize: 34,
         fontWeight: '700',
         color: '#93BBB2',
         textAlign: 'center',
+    },
+    logo: {
+        flex: 1,
+        height: 48,
     },
 });
