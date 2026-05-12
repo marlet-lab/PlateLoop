@@ -1,7 +1,9 @@
-import {View, Text, Button, StyleSheet} from 'react-native';
-import { router} from 'expo-router';
+import { router, useNavigation } from 'expo-router';
+import { Button, StyleSheet, View } from 'react-native';
 
 export default function KitchenScreen() {
+    const navigation = useNavigation();
+    navigation.setOptions({ title: 'Kitchen View' }); // Set the header title for this screen
     return(
         <View style = {styles.container}>
             <Button 
