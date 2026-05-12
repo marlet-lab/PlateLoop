@@ -18,7 +18,7 @@ export default {
   },
 };
 
-export const Colors = {
+export const colors = {
   primary: '#2D6A4F',
   primaryLight: '#52B788',
   primaryDark: '#1B4332',
