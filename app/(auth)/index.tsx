@@ -1,15 +1,23 @@
-import { auth, signOutUser } from '@/config/firebase'
-import { router } from 'expo-router'
-import React from 'react'
-import { Button, StyleSheet, Text, View } from 'react-native'
+import AppHeader from '@/components/AppHeader';
+import NotificationModal from '@/components/NotificationModal';
+import { auth, signOutUser } from '@/config/firebase';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 const index = () => {
+  const [notifVisible, setNotifVisible] = useState(false);
+
   const signOut = () => {
     router.push('/(noAuth)');
     signOutUser(auth);
   }
+  
   return (
     <View style = {styles.container}>
+      <View style={styles.headerWrapper}>
+        <AppHeader title="Home" onNotificationPress={() => setNotifVisible(true)}/>
+      </View>
         <Button 
             title = "Go to kitchen" 
             onPress={() => router.push('/kitchen')}
@@ -23,6 +31,10 @@ const index = () => {
             onPress = {signOut}
         />
       <Text> Home screen </Text>
+      <NotificationModal
+        visible={notifVisible}
+        onClose={() => setNotifVisible(false)}
+      />
     </View>
   )
 }
@@ -33,8 +45,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         gap: 10,
-        padding: 20
+        //padding: 20
     },
+    headerWrapper: {
+    width: '100%',
+    height: 100,        
+    flexShrink: 0, 
+  },
 });
