@@ -1,11 +1,13 @@
 import { CameraCapturedPicture, CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Card from '../../../components/Card';
 
 export default function CameraScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
+    const [showExitModal, setShowExitModal] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
 
     if (!permission) {
@@ -39,17 +41,48 @@ export default function CameraScreen() {
                     <Text style={styles.counter}>
                         Photos: {photos.length}
                     </Text>
-                    <TouchableOpacity style={styles.exitButton} onPress={takePhoto}>
+                    <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
                         <Text style={styles.buttonText}>Take Photo</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.exitButton}
-                        onPress={() => router.back()}
+                        onPress={() => setShowExitModal(true)}
                     >
                         <Text style={styles.buttonText}>Exit</Text>
                     </TouchableOpacity>
                 </View>
             </CameraView>
+
+            <Modal visible={showExitModal} transparent animationType="fade">
+                <View style={styles.modalBackdrop}>
+                    <Card style={styles.modalCard}>
+                        <Text style={styles.modalTitle}>Review Photos</Text>
+                        {photos.length === 0 ? (
+                            <Text style={styles.modalEmptyText}>No photos taken.</Text>
+                        ) : (
+                            <ScrollView showsVerticalScrollIndicator={false} style={styles.photoScroll}>
+                                <View style={styles.photoGrid}>
+                                    {photos.map((photo, index) => (
+                                        <Image
+                                            key={index}
+                                            source={{ uri: photo.uri }}
+                                            style={styles.thumbnail}
+                                        />
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        )}
+                        <View style={styles.modalActions}>
+                            <TouchableOpacity style={styles.cancelButton} onPress={() => setShowExitModal(false)}>
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+                                <Text style={styles.buttonText}>Exit</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Card>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -69,7 +102,13 @@ const styles = StyleSheet.create({
         paddingBottom: 60,
     },
     exitButton: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(255, 0, 0, 0.6)',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 24,
+    },
+        captureButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.6)',
         paddingVertical: 12,
         paddingHorizontal: 32,
         borderRadius: 24,
@@ -97,13 +136,66 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     counter: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    marginTop: 40,
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
+        marginTop: 40,
+    },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    modalCard: {
+        width: '100%',
+        gap: 16,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1A1A1A',
+    },
+    modalEmptyText: {
+        fontSize: 14,
+        color: '#888',
+    },
+    photoScroll: {
+        width: '100%',
+        maxHeight: 300,
+    },
+    photoGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    thumbnail: {
+        width: 100,
+        height: 100,
+        borderRadius: 12,
+        marginRight: 8,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        gap: 12,
+        width: '100%',
+        justifyContent: 'flex-end',
+    },
+    cancelButton: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#EAEAEA',
+    },
+    cancelButtonText: {
+        color: '#1A1A1A',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
