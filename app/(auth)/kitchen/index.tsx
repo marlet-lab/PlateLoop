@@ -1,19 +1,26 @@
+import Card from '@/components/Card';
 import { router, useNavigation } from 'expo-router';
-import { Button, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 export default function KitchenScreen() {
     const navigation = useNavigation();
     navigation.setOptions({ title: 'Kitchen View' }); // Set the header title for this screen
     return(
         <View style = {styles.container}>
-            <Button 
-                title = "Go to inventory" 
+            <Card style={{ padding: 20, alignItems: 'center', gap: 10 }}>
+            <Pressable
                 onPress={() => router.push('/inventory')}
-            />
-            <Button
-                title = "Go home"
-                onPress = {() => router.push('/')}
-            />
+            >
+                <text>Go to inventory</text>
+            </Pressable>
+            </Card>
+            <Card style={{ padding: 20, alignItems: 'center', gap: 10 }}>
+            <Pressable
+                onPress={() => router.push('/')}
+            >
+                <text>Go home</text>
+            </Pressable>
+            </Card>
         </View>
 
     ); 
