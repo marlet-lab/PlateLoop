@@ -1,9 +1,12 @@
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraCapturedPicture, CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function CameraScreen() {
     const [permission, requestPermission] = useCameraPermissions();
+    const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
+    const cameraRef = useRef<CameraView | null>(null);
 
     if (!permission) {
         return <View style={styles.container} />;
@@ -15,23 +18,36 @@ export default function CameraScreen() {
                 <Text style={styles.permissionText}>
                     We need your permission to use the camera.
                 </Text>
-                <Pressable style={styles.button} onPress={requestPermission}>
+                <TouchableOpacity style={styles.button} onPress={requestPermission}>
                     <Text style={styles.buttonText}>Grant permission</Text>
-                </Pressable>
+                </TouchableOpacity>
             </View>
         );
     }
 
+    const takePhoto = async () => {
+        if (cameraRef.current) {
+            const photo = await cameraRef.current.takePictureAsync();
+            setPhotos((prevPhotos) => [...prevPhotos, photo]);
+        }
+    };
+
     return (
         <View style={styles.container}>
-            <CameraView style={styles.camera} facing="back">
+            <CameraView style={styles.camera} facing="front" ref={cameraRef}>
                 <View style={styles.overlay}>
-                    <Pressable
+                    <Text style={styles.counter}>
+                        Photos: {photos.length}
+                    </Text>
+                    <TouchableOpacity style={styles.exitButton} onPress={takePhoto}>
+                        <Text style={styles.buttonText}>Take Photo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                         style={styles.exitButton}
                         onPress={() => router.back()}
                     >
                         <Text style={styles.buttonText}>Exit</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
             </CameraView>
         </View>
@@ -79,5 +95,15 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
+    },
+    counter: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginTop: 40,
     },
 });
