@@ -8,6 +8,7 @@ export default function CameraScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [showExitModal, setShowExitModal] = useState(false);
+    const [showInnerModal, setShowInnerModal] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
 
     if (!permission) {
