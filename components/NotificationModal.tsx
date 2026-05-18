@@ -1,205 +1,115 @@
-// components/NotificationModal.tsx
-import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
-import {
-    ActivityIndicator,
-    Animated,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Dimensions, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { fetchWeather } from '../services/weatherService';
 
-type Props = {
-  visible: boolean;
-  onClose: () => void;
+type Props = { visible: boolean; onClose: () => void; };
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const PANEL_WIDTH = Platform.OS === 'web' ? 500 : SCREEN_WIDTH * 0.85;
+
+// 1. Pre-process static data to include 'id' and 'isReal' natively, avoiding runtime .map() overhead
+const EXAMPLE_PAST_DAYS = [
+  { id: 1, isReal: false, weather: 'Rainy Day', tip: 'Ripe bananas are perfect for baking.', timeLabel: 'Yesterday' },
+  { id: 2, isReal: false, weather: 'Sunny Day', tip: 'Add garlic late — it loses benefits when overcooked.', timeLabel: '2 days ago' },
+  { id: 3, isReal: false, weather: 'Cloudy Day', tip: 'Use more spinach than you think — it wilts a lot.', timeLabel: '3 days ago' },
+  { id: 4, isReal: false, weather: 'Windy Day', tip: 'Lemon zest adds flavour without the acidity.', timeLabel: '4 days ago' },
+  { id: 5, isReal: false, weather: 'Partly Cloudy', tip: 'Chickpeas are a great meat substitute in stews.', timeLabel: '5 days ago' },
+  { id: 6, isReal: false, weather: 'Clear Sky', tip: 'Add fresh herbs at the end of cooking.', timeLabel: '6 days ago' },
+];
+
+const WEATHER_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
+  'Rainy Day': 'weather-pouring', 'Sunny Day': 'weather-sunny', 'Cloudy Day': 'weather-cloudy',
+  'Windy Day': 'weather-windy', 'Partly Cloudy': 'weather-partly-cloudy', 'Clear Sky': 'weather-sunny',
 };
 
-// One ingredient tip per day — add/edit as many as you like
-const INGREDIENT_TIPS: string[] = [
-  'Try adding turmeric to your soup for an anti-inflammatory boost.',
-  'Ripe bananas are perfect for baking — don\'t throw them away.',
-  'Garlic loses its benefits when overcooked. Add it late.',
-  'Spinach wilts to a fraction of its size — use more than you think.',
-  'Lemon zest adds flavour without the acidity of juice.',
-  'Chickpeas are a great meat substitute in stews.',
-  'Fresh herbs should be added at the end of cooking.',
-];
-
-const WEATHER_CONDITIONS = [
-  'Rainy Day',
-  'Sunny Day',
-  'Cloudy Day',
-  'Windy Day',
-  'Snowy Day',
-  'Partly Cloudy',
-  'Clear Sky',
-];
-
-// Fixed panel width — change this to adjust size
-const PANEL_WIDTH = 260;
-
-function getTimeLabel(daysAgo: number): string {
-  if (daysAgo === 0) return 'Today';
-  if (daysAgo === 1) return 'Yesterday';
-  return `${daysAgo} days ago`;
-}
-
-function buildNotifications(currentWeather: string) {
-  return Array.from({ length: 7 }, (_, i) => ({
-    id: i,
-    weather: i === 0 ? currentWeather : WEATHER_CONDITIONS[i % WEATHER_CONDITIONS.length],
-    tip: INGREDIENT_TIPS[i % INGREDIENT_TIPS.length],
-    timeLabel: getTimeLabel(i),
-  }));
-}
-
 export default function NotificationModal({ visible, onClose }: Props) {
-  const [notifications, setNotifications] = useState<ReturnType<typeof buildNotifications>>([]);
+  const [items, setItems] = useState(EXAMPLE_PAST_DAYS); // 2. Default to example data
   const [loading, setLoading] = useState(false);
-  const slideAnim = React.useRef(new Animated.Value(PANEL_WIDTH)).current;
+  const slideAnim = useRef(new Animated.Value(PANEL_WIDTH)).current;
 
   useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: visible ? 0 : PANEL_WIDTH,
+      duration: visible ? 250 : 200,
+      useNativeDriver: true,
+    }).start();
+    
     if (visible) {
-      loadNotifications();
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: PANEL_WIDTH,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      setLoading(true);      
+      fetchWeather('London')
+        .then(({ description, temp }) => {
+          setItems([{ 
+            id: 0, isReal: true, weather: `${description}, ${temp}°C`, 
+            tip: 'Try turmeric in your soup for an anti-inflammatory boost.', timeLabel: 'Today' 
+          }, ...EXAMPLE_PAST_DAYS]);
+        })
+        .catch(() => setItems(EXAMPLE_PAST_DAYS))
+        .finally(() => setLoading(false));
     }
   }, [visible]);
 
-  async function loadNotifications() {
-    setLoading(true);
-    try {
-      const weather = await fetchWeather('London'); // change city as needed
-      setNotifications(buildNotifications(`${weather.description}, ${weather.temp}°C`));
-    } catch {
-      setNotifications(buildNotifications('Weather unavailable'));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
-      {/* Dark overlay — tap to close */}
       <Pressable style={styles.overlay} onPress={onClose} />
-
-      {/* Sliding right panel */}
       <Animated.View style={[styles.panel, { transform: [{ translateX: slideAnim }] }]}>
-        {/* Header */}
+        
         <View style={styles.header}>
           <Text style={styles.heading}>Notifications</Text>
           <TouchableOpacity onPress={onClose}>
-            <Ionicons name="close" size={22} color="#555" />
+            <Ionicons name="close" size={20} color={COLORS.text} />
           </TouchableOpacity>
         </View>
 
-        {loading && <ActivityIndicator color="#0D7A5F" style={{ marginTop: 20 }} />}
-
-        {/* Notification list */}
-        {!loading && notifications.map((n) => (
-          <View key={n.id} style={styles.item}>
-            <View style={styles.iconWrapper}>
-              <Ionicons name="leaf-outline" size={20} color="#0D7A5F" />
-            </View>
-            <View style={styles.itemContent}>
-              <View style={styles.itemRow}>
-                <Text style={styles.itemTitle}>{n.weather}</Text>
-                <Text style={styles.itemTime}>{n.timeLabel}</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+          {loading ? (
+            <ActivityIndicator color={COLORS.primary} style={{ marginTop: 24 }} />
+          ) : (
+            items.map((item) => (
+              <View key={item.id} style={styles.item}>
+                <MaterialCommunityIcons 
+                  name={WEATHER_ICONS[item.weather.split(',')[0]] || 'weather-cloudy'} 
+                  size={24} 
+                  color={item.isReal ? COLORS.primary : '#6B7280'} 
+                  style={{ marginTop: 2 }}
+                />
+                <View style={styles.itemBody}>
+                  <View style={styles.itemTop}>
+                    <Text style={styles.itemWeather}>{item.weather}</Text>
+                    <Text style={styles.itemTime}>{item.timeLabel}</Text>
+                  </View>
+                  <Text style={styles.itemTip}>{item.tip}</Text>
+                  {!item.isReal && <Text style={styles.exampleTag}>example</Text>}
+                </View>
               </View>
-              <Text style={styles.itemTip} numberOfLines={2}>{n.tip}</Text>
-            </View>
-          </View>
-        ))}
+            ))
+          )}
+        </ScrollView>
       </Animated.View>
     </Modal>
   );
 }
 
-const GREEN = '#0D7A5F';
+const COLORS = { primary: '#3352BA', primaryDark: '#0000B8', accent: '#FFC168', background: '#F5FAF9', text: '#333333' };
 
+// 4. Grouped standard layout properties to save vertical space
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-  },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.30)' },
   panel: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: PANEL_WIDTH,
-    backgroundColor: '#fff',
-    paddingTop: 60,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 10,
+    position: 'absolute', top: 0, right: 0, bottom: 0, width: PANEL_WIDTH,
+    backgroundColor: COLORS.background, paddingTop: 56, paddingHorizontal: 18,
+    shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, elevation: 10,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  heading: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: '#D9EAE7' },
+  heading: { fontFamily: 'Inter_600SemiBold', fontSize: 15, color: COLORS.primary },
   item: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 18,
-    gap: 10,
+    flexDirection: 'row', gap: 12, marginBottom: 14, backgroundColor: '#ECFDF5',
+    borderRadius: 24, paddingVertical: 14, paddingHorizontal: 18, borderWidth: 1, borderColor: '#000',
   },
-  iconWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#e8f5f1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  itemContent: {
-    flex: 1,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 3,
-  },
-  itemTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1a1a1a',
-  },
-  itemTime: {
-    fontSize: 11,
-    color: '#aaa',
-  },
-  itemTip: {
-    fontSize: 12,
-    color: '#666',
-    lineHeight: 17,
-  },
+  itemBody: { flex: 1, gap: 3 },
+  itemTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  itemWeather: { fontFamily: 'Inter_600SemiBold', fontSize: 12, color: COLORS.text },
+  itemTime: { fontFamily: 'OpenSans_400Regular', fontSize: 10, color: '#999' },
+  itemTip: { fontFamily: 'OpenSans_400Regular', fontSize: 11, color: '#555', lineHeight: 16 },
+  exampleTag: { fontFamily: 'OpenSans_400Regular', fontSize: 10, color: COLORS.accent, fontStyle: 'italic' },
 });

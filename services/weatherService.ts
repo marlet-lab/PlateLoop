@@ -28,5 +28,5 @@ export async function fetchWeather(city: String = 'Perth'): Promise<WeatherData>
 
 export function buildWeatherMessage(weather: WeatherData): string {
     const {city, temp, description, humidity, windSpeed} = weather;
-    return '${city}: ${temp}°C, ${description}. Humidity ${humidity}%, wind ${windSpeed} km/h.';
+    return `${city}: ${temp}°C, ${description}. Humidity ${humidity}%, wind ${windSpeed} km/h.`;
 }
