@@ -24,6 +24,9 @@ export default function RootLayout() {
       <Stack.Screen
         name = "inventory" options={{title: 'Inventory'}}
       />
+      <Stack.Screen
+        name = "kitchen/camera" options={{ headerShown: false }}
+      />
     </Stack>
   );
 }
