@@ -9,6 +9,15 @@ export default function LogWaste() {
     const [menuItem, setMenuItem] = useState ("");
     const [isListening, setIsListening] = useState(false);
     const [spokenText, setSpokenText] = useState("");
+     const parseSpeech = (text: string) => {
+        const words = text.split(" ");
+      
+        if (words.length >= 3) {
+          setProduct(words[0]);
+          setWeight(words[1]);
+          setMenuItem(words.slice(2).join(" "));
+        }
+    };
 
     useSpeechRecognitionEvent("start", () => {
         setIsListening(true);
@@ -19,8 +28,14 @@ export default function LogWaste() {
       });
       
       useSpeechRecognitionEvent("result", (event) => {
-        const transcript = event.results[0]?.transcript;
+        const transcript = event.results[0]?.transcript || "";
+
         setSpokenText(transcript);
+      
+        parseSpeech(transcript);
+      });
+      useSpeechRecognitionEvent("error", (event) => {
+        console.log("Speech recognition error:", event);
       });
     
       const handleStart = async () => {
@@ -35,6 +50,7 @@ export default function LogWaste() {
           interimResults: true,
           continuous: false,
         });
+        
       };
 
     return (        
@@ -74,6 +90,10 @@ export default function LogWaste() {
                 onPress={handleStart}
               
             />
+            <Button
+  title="Stop speech"
+  onPress={() => ExpoSpeechRecognitionModule.stop()}
+/>
              <Text>{spokenText}</Text>
 
             </View>
@@ -115,3 +135,5 @@ const styles = StyleSheet.create({
             padding: 25,
         },
 });
+
+
