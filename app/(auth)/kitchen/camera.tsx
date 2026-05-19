@@ -12,6 +12,9 @@ export default function CameraScreen() {
     const [showExitModal, setShowExitModal] = useState(false);
     const [isCapturing, setIsCapturing] = useState(false);
     const [flashVisible, setFlashVisible] = useState(false);
+    const [currentDiff, setCurrentDiff] = useState<number | null>(null);
+    const [recordingTime, setRecordingTime] = useState(0);
+    const [ledOn, setLedOn] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const prevFrameRef = useRef<string | null>(null);
@@ -22,7 +25,7 @@ export default function CameraScreen() {
         if (isCapturing) {
             intervalRef.current = setInterval(async () => {
                 if (cameraRef.current) {
-                    const photo = await cameraRef.current.takePictureAsync({ base64: true });
+                    const photo = await cameraRef.current.takePictureAsync();
                     const small = await ImageManipulator.manipulateAsync(
                         photo.uri,
                         [{ resize: { width: 64 } }],
@@ -31,6 +34,7 @@ export default function CameraScreen() {
                     console.log('Frame captured, base64 length:', small.base64?.length);
                     if (prevFrameRef.current && small.base64) {
                         const diff = computeDiff(prevFrameRef.current, small.base64);
+                        setCurrentDiff(diff);
                         const now = Date.now();
                         if (diff > 0.2 && now - lastDetectionRef.current > COOLDOWN_MS) {
                             lastDetectionRef.current = now;
@@ -61,6 +65,24 @@ export default function CameraScreen() {
             }
         };
     }, [isCapturing]);
+
+    useEffect(() => {
+        if (!isCapturing) {
+            setRecordingTime(0);
+            setCurrentDiff(null);
+            setLedOn(false);
+            return;
+        }
+        const timerId = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+        const ledId = setInterval(() => setLedOn((on) => !on), 500);
+        return () => {
+            clearInterval(timerId);
+            clearInterval(ledId);
+        };
+    }, [isCapturing]);
+
+    const formatTime = (s: number) =>
+        `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
     if (!permission) {
         return <View style={styles.container} />;
@@ -112,6 +134,26 @@ function computeDiff(a: string, b: string): number {
     return (
         <View style={styles.container}>
             <CameraView style={styles.camera} facing="front" ref={cameraRef}>
+                <View style={styles.recordingBar}>
+                    <View style={[styles.led, ledOn && styles.ledOn]} />
+                    <Text style={styles.recordingText}>REC</Text>
+                    <Text style={styles.recordingText}>{formatTime(recordingTime)}</Text>
+                    <Text style={styles.recordingText}>
+                        Diff: {currentDiff !== null ? currentDiff.toFixed(2) : '—'}
+                    </Text>
+                </View>
+
+                <View style={[styles.corner, styles.cornerTL]} />
+                <View style={[styles.corner, styles.cornerTR]} />
+                <View style={[styles.corner, styles.cornerBL]} />
+                <View style={[styles.corner, styles.cornerBR]} />
+
+                <View style={styles.centerReticle} pointerEvents="none">
+                    <View style={[styles.centerCorner, styles.centerCornerTL]} />
+                    <View style={[styles.centerCorner, styles.centerCornerTR]} />
+                    <View style={[styles.centerCorner, styles.centerCornerBL]} />
+                    <View style={[styles.centerCorner, styles.centerCornerBR]} />
+                </View>
                 <View style={styles.overlay}>
                     <Text style={styles.counter}>
                         Photos: {photos.length}
@@ -179,6 +221,103 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'white',
         opacity: 0.8,
+    },
+    recordingBar: {
+        position: 'absolute',
+        top: 50,
+        left: 20,
+        right: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        gap: 12,
+        zIndex: 10,
+    },
+    led: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    },
+    ledOn: {
+        backgroundColor: '#FF0000',
+    },
+    recordingText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    corner: {
+        position: 'absolute',
+        width: 30,
+        height: 30,
+        borderColor: 'white',
+    },
+    cornerTL: {
+        top: 100,
+        left: 20,
+        borderTopWidth: 3,
+        borderLeftWidth: 3,
+    },
+    cornerTR: {
+        top: 100,
+        right: 20,
+        borderTopWidth: 3,
+        borderRightWidth: 3,
+    },
+    cornerBL: {
+        bottom: 100,
+        left: 20,
+        borderBottomWidth: 3,
+        borderLeftWidth: 3,
+    },
+    cornerBR: {
+        bottom: 100,
+        right: 20,
+        borderBottomWidth: 3,
+        borderRightWidth: 3,
+    },
+    centerReticle: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: 100,
+        height: 100,
+        marginTop: -50,
+        marginLeft: -50,
+    },
+    centerCorner: {
+        position: 'absolute',
+        width: 20,
+        height: 20,
+        borderColor: 'white',
+    },
+    centerCornerTL: {
+        top: 0,
+        left: 0,
+        borderTopWidth: 2,
+        borderLeftWidth: 2,
+    },
+    centerCornerTR: {
+        top: 0,
+        right: 0,
+        borderTopWidth: 2,
+        borderRightWidth: 2,
+    },
+    centerCornerBL: {
+        bottom: 0,
+        left: 0,
+        borderBottomWidth: 2,
+        borderLeftWidth: 2,
+    },
+    centerCornerBR: {
+        bottom: 0,
+        right: 0,
+        borderBottomWidth: 2,
+        borderRightWidth: 2,
     },
     overlay: {
         flex: 1,
