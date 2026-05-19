@@ -1,6 +1,6 @@
 import { CameraCapturedPicture, CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Card from '../../../components/Card';
 
@@ -9,7 +9,32 @@ export default function CameraScreen() {
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [showExitModal, setShowExitModal] = useState(false);
     const [showInnerModal, setShowInnerModal] = useState(false);
+    const [isCapturing, setIsCapturing] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    useEffect(() => {
+        if (isCapturing) {
+            intervalRef.current = setInterval(async () => {
+                if (cameraRef.current) {
+                    const photo = await cameraRef.current.takePictureAsync({ base64: true });
+                    console.log('Frame captured, base64 length:', photo.base64?.length);
+                    setPhotos((prev) => [...prev, photo]);
+                }
+            }, 1000);
+        } else {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        }
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [isCapturing]);
 
     if (!permission) {
         return <View style={styles.container} />;
@@ -45,9 +70,12 @@ export default function CameraScreen() {
                     <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
                         <Text style={styles.buttonText}>Take Photo</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.captureButton} onPress={() => setIsCapturing((prev) => !prev)}>
+                        <Text style={styles.buttonText}>{isCapturing ? 'Stop Auto' : 'Start Auto'}</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.exitButton}
-                        onPress={() => setShowExitModal(true)}
+                        onPress={() => { setIsCapturing(false); setShowExitModal(true); }}
                     >
                         <Text style={styles.buttonText}>Exit</Text>
                     </TouchableOpacity>
