@@ -25,7 +25,7 @@ const index = () => {
         <Button 
            title="Log waste" 
            onPress={() => router.push('/log-waste')}
-/>
+        />
       <Text> Home screen </Text>
     </View>
   )
