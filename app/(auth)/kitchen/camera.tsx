@@ -10,11 +10,13 @@ export default function CameraScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [photos, setPhotos] = useState<CameraCapturedPicture[]>([]);
     const [showExitModal, setShowExitModal] = useState(false);
-    const [showInnerModal, setShowInnerModal] = useState(false);
     const [isCapturing, setIsCapturing] = useState(false);
+    const [flashVisible, setFlashVisible] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const prevFrameRef = useRef<string | null>(null);
+    const lastDetectionRef = useRef<number>(0);
+    const COOLDOWN_MS = 3000;
 
     useEffect(() => {
         if (isCapturing) {
@@ -29,10 +31,21 @@ export default function CameraScreen() {
                     console.log('Frame captured, base64 length:', small.base64?.length);
                     if (prevFrameRef.current && small.base64) {
                         const diff = computeDiff(prevFrameRef.current, small.base64);
-                        console.log('Diff score:', diff);
+                        const now = Date.now();
+                        if (diff > 0.2 && now - lastDetectionRef.current > COOLDOWN_MS) {
+                            lastDetectionRef.current = now;
+                            console.log('Movement detected', diff);
+                            setTimeout(async () => {
+                                if (cameraRef.current) {
+                                    const settled = await cameraRef.current.takePictureAsync();
+                                    setPhotos((prev) => [...prev, settled]);
+                                    setFlashVisible(true);
+                                    setTimeout(() => setFlashVisible(false), 150);
+                                }
+                            }, 500);
+                        }
                     }
                     prevFrameRef.current = small.base64 ?? null;
-                    setPhotos((prev) => [...prev, photo]);
                 }
             }, 1000);
         } else {
@@ -118,6 +131,8 @@ function computeDiff(a: string, b: string): number {
                 </View>
             </CameraView>
 
+            {flashVisible && <View style={styles.flash} pointerEvents="none" />}
+
             <Modal visible={showExitModal} transparent animationType="fade">
                 <View style={styles.modalBackdrop}>
                     <Card style={styles.modalCard}>
@@ -141,7 +156,7 @@ function computeDiff(a: string, b: string): number {
                             <TouchableOpacity style={styles.cancelButton} onPress={() => setShowExitModal(false)}>
                                 <Text style={styles.cancelButtonText}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+                            <TouchableOpacity style={styles.exitButton} onPress={() => { setShowExitModal(false); router.replace('/kitchen'); }}>
                                 <Text style={styles.buttonText}>Exit</Text>
                             </TouchableOpacity>
                         </View>
@@ -159,6 +174,11 @@ const styles = StyleSheet.create({
     },
     camera: {
         flex: 1,
+    },
+    flash: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'white',
+        opacity: 0.8,
     },
     overlay: {
         flex: 1,
