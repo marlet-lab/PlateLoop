@@ -1,5 +1,7 @@
 import { CameraCapturedPicture, CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { router } from 'expo-router';
+import jpegjs from 'jpeg-js';
 import { useEffect, useRef, useState } from 'react';
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Card from '../../../components/Card';
@@ -12,13 +14,24 @@ export default function CameraScreen() {
     const [isCapturing, setIsCapturing] = useState(false);
     const cameraRef = useRef<CameraView | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const prevFrameRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (isCapturing) {
             intervalRef.current = setInterval(async () => {
                 if (cameraRef.current) {
                     const photo = await cameraRef.current.takePictureAsync({ base64: true });
-                    console.log('Frame captured, base64 length:', photo.base64?.length);
+                    const small = await ImageManipulator.manipulateAsync(
+                        photo.uri,
+                        [{ resize: { width: 64 } }],
+                        { format: ImageManipulator.SaveFormat.JPEG, base64: true, compress: 0 }
+                    );
+                    console.log('Frame captured, base64 length:', small.base64?.length);
+                    if (prevFrameRef.current && small.base64) {
+                        const diff = computeDiff(prevFrameRef.current, small.base64);
+                        console.log('Diff score:', diff);
+                    }
+                    prevFrameRef.current = small.base64 ?? null;
                     setPhotos((prev) => [...prev, photo]);
                 }
             }, 1000);
@@ -59,6 +72,29 @@ export default function CameraScreen() {
             setPhotos((prevPhotos) => [...prevPhotos, photo]);
         }
     };
+
+function computeDiff(a: string, b: string): number {
+    const toBytes = (b64: string) => {
+        const raw = b64.replace(/^data:image\/\w+;base64,/, '');
+        const binary = atob(raw);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return bytes;
+    };
+
+    const frameA = jpegjs.decode(toBytes(a), { useTArray: true });
+    const frameB = jpegjs.decode(toBytes(b), { useTArray: true });
+
+    const total = frameA.data.length / 4; // RGBA, so /4 = pixel count
+    let changed = 0;
+    for (let i = 0; i < frameA.data.length; i += 4) {
+        const dr = Math.abs(frameA.data[i]   - frameB.data[i]);
+        const dg = Math.abs(frameA.data[i+1] - frameB.data[i+1]);
+        const db = Math.abs(frameA.data[i+2] - frameB.data[i+2]);
+        if (dr + dg + db > 30) changed++; // tolerance for camera noise
+    }
+    return changed / total; // 0 = identical, 1 = everything changed
+}
 
     return (
         <View style={styles.container}>
