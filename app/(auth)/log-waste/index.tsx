@@ -1,3 +1,4 @@
+import * as Speech from "expo-speech";
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import React, { useState } from 'react';
 import { Button, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -22,6 +23,17 @@ export default function LogWaste() {
         const lowerText = wordsToNumbers(
             text.toLowerCase()
         );
+        
+        if (lowerText.includes("stop")) {
+            ExpoSpeechRecognitionModule.stop();
+           
+            const summary = `You logged ${weight} kilo of ${product} when prepping ${menuItem}`;
+            Speech.speak(summary, {
+            language: "en-US",
+          }); 
+          return;
+        }
+
 
         const productMatch = lowerText.match(/product (.*?)(?= weight| wait| menu item|$)/);
         const weightMatch = lowerText.match(/(?:weight|wait) (.*?)(?= product| menu item|$)/);
@@ -70,8 +82,7 @@ export default function LogWaste() {
           interimResults: true,
           continuous: true,
         });
-        
-      };
+    };
 
     return (        
         <View style={{flex: 1}}>
@@ -155,6 +166,5 @@ const styles = StyleSheet.create({
             alignItems: 'center',
             padding: 25,
         },
-});
 
-
+}); 
