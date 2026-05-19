@@ -1,3 +1,4 @@
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import React, { useState } from 'react';
 import { Button, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -6,7 +7,36 @@ export default function LogWaste() {
     const [product, setProduct] = useState ("");
     const [weight, setWeight] = useState ("");
     const [menuItem, setMenuItem] = useState ("");
+    const [isListening, setIsListening] = useState(false);
+    const [spokenText, setSpokenText] = useState("");
+
+    useSpeechRecognitionEvent("start", () => {
+        setIsListening(true);
+      });
+      
+      useSpeechRecognitionEvent("end", () => {
+        setIsListening(false);
+      });
+      
+      useSpeechRecognitionEvent("result", (event) => {
+        const transcript = event.results[0]?.transcript;
+        setSpokenText(transcript);
+      });
     
+      const handleStart = async () => {
+        const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+        if (!result.granted) {
+          console.warn("Permissions not granted", result);
+          return;
+        }
+        // Start speech recognition
+        ExpoSpeechRecognitionModule.start({
+          lang: "en-US",
+          interimResults: true,
+          continuous: false,
+        });
+      };
+
     return (        
         <View style={{flex: 1}}>
            <Text> Log new waste</Text>
@@ -39,6 +69,13 @@ export default function LogWaste() {
             <Button 
                 title='Save' onPress={() => setModalVisible(false)} 
             />
+            <Button
+                title={isListening ? "Listening..." : "Use speech"}
+                onPress={handleStart}
+              
+            />
+             <Text>{spokenText}</Text>
+
             </View>
             </View>
             </Modal>
