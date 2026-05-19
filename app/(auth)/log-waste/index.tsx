@@ -9,15 +9,36 @@ export default function LogWaste() {
     const [menuItem, setMenuItem] = useState ("");
     const [isListening, setIsListening] = useState(false);
     const [spokenText, setSpokenText] = useState("");
-     const parseSpeech = (text: string) => {
-        const words = text.split(" ");
-      
-        if (words.length >= 3) {
-          setProduct(words[0]);
-          setWeight(words[1]);
-          setMenuItem(words.slice(2).join(" "));
-        }
+    
+    const wordsToNumbers = (text: string) => {
+        return text
+        .replace(/\bto\b/g, "2")
+        .replace(/\btwo\b/g, "2")
+        .replace(/\bfor\b/g, "4")
+        .replace(/\bfour\b/g, "4")
     };
+
+    const parseSpeech = (text: string) => {
+        const lowerText = wordsToNumbers(
+            text.toLowerCase()
+        );
+
+        const productMatch = lowerText.match(/product (.*?)(?= weight| wait| menu item|$)/);
+        const weightMatch = lowerText.match(/(?:weight|wait) (.*?)(?= product| menu item|$)/);
+        const menuItemMatch = lowerText.match(/menu item (.*?)(?= product| weight| wait|$)/);
+      
+        if (productMatch && productMatch[1]) {
+            setProduct(productMatch[1].trim());
+          }
+        
+          if (weightMatch && weightMatch[1]) {
+            setWeight(weightMatch[1].trim());
+          }
+        
+          if (menuItemMatch && menuItemMatch[1]) {
+            setMenuItem(menuItemMatch[1].trim());
+          }
+        };
 
     useSpeechRecognitionEvent("start", () => {
         setIsListening(true);
@@ -29,11 +50,10 @@ export default function LogWaste() {
       
       useSpeechRecognitionEvent("result", (event) => {
         const transcript = event.results[0]?.transcript || "";
-
         setSpokenText(transcript);
-      
         parseSpeech(transcript);
       });
+
       useSpeechRecognitionEvent("error", (event) => {
         console.log("Speech recognition error:", event);
       });
@@ -48,7 +68,7 @@ export default function LogWaste() {
         ExpoSpeechRecognitionModule.start({
           lang: "en-US",
           interimResults: true,
-          continuous: false,
+          continuous: true,
         });
         
       };
@@ -90,10 +110,11 @@ export default function LogWaste() {
                 onPress={handleStart}
               
             />
-            <Button
-  title="Stop speech"
-  onPress={() => ExpoSpeechRecognitionModule.stop()}
-/>
+            <Button //för att testa mic
+             title="Stop speech"
+            onPress={() => ExpoSpeechRecognitionModule.stop()}
+            />
+
              <Text>{spokenText}</Text>
 
             </View>
