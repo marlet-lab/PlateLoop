@@ -24,6 +24,10 @@ export default function RootLayout() {
       <Stack.Screen
         name = "inventory" options={{title: 'Inventory'}}
       />
+      <Stack.Screen
+        name = "log-waste" options={{title: 'Log Waste'}}
+      />
     </Stack>
+    
   );
 }

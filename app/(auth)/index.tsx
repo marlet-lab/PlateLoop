@@ -22,6 +22,10 @@ const index = () => {
             title = "Sign out"
             onPress = {signOut}
         />
+        <Button 
+           title="Log waste" 
+           onPress={() => router.push('/log-waste')}
+/>
       <Text> Home screen </Text>
     </View>
   )
