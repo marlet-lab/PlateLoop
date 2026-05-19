@@ -4,7 +4,7 @@ import { ActivityIndicator, Animated, Dimensions, Modal, Platform, Pressable, Sc
 import { fetchPastWeek, fetchWeather } from '../services/weatherService';
 
 const PANEL_WIDTH = Platform.OS === 'web' ? 500 : Dimensions.get('window').width * 0.85;
-const COLORS = { primary: '#3352BA', primaryDark: '#0000B8', accent: '#FFC168', background: '#F5FAF9', text: '#333333' };
+const COLORS = { primary: '#005D47', background: '#F5FAF9', text: '#333333' };
 
 const WEATHER_TIPS: Record<string, string> = {
   // Rainy
@@ -126,8 +126,7 @@ export default function NotificationModal({ visible, onClose }: { visible: boole
                   <Text style={styles.itemWeather}>{item.weather}</Text>
                   <Text style={styles.itemTime}>{item.timeLabel}</Text>
                 </View>
-                <Text style={styles.itemTip}>{item.tip}</Text>
-                {!item.isReal && <Text style={styles.exampleTag}>example</Text>}
+                <Text style={styles.itemTip}>{item.tip}</Text>                
               </View>
             </View>
           ))}
@@ -147,6 +146,5 @@ const styles = StyleSheet.create({
   itemTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   itemWeather: { fontFamily: 'Inter_600SemiBold', fontSize: 12, color: COLORS.text },
   itemTime: { fontFamily: 'OpenSans_400Regular', fontSize: 10, color: '#999' },
-  itemTip: { fontFamily: 'OpenSans_400Regular', fontSize: 11, color: '#555', lineHeight: 16 },
-  exampleTag: { fontFamily: 'OpenSans_400Regular', fontSize: 10, color: COLORS.accent, fontStyle: 'italic' },
+  itemTip: { fontFamily: 'OpenSans_400Regular', fontSize: 11, color: '#000', lineHeight: 16 },
 });
