@@ -9,7 +9,24 @@ export default function LogWaste() {
     const [weight, setWeight] = useState ("");
     const [menuItem, setMenuItem] = useState ("");
     const [isListening, setIsListening] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const [spokenText, setSpokenText] = useState("");
+    const [confirmationMode, setConfirmationMode] = useState(false);
+
+    const saveWaste = () => {
+        console.log({
+            product,
+            weight,
+            menuItem,
+        });
+
+        setModalVisible(false);
+        setProduct("");
+        setWeight("");
+        setMenuItem("");
+        setSpokenText("");
+        setConfirmationMode(false);
+    }
     
     const wordsToNumbers = (text: string) => {
         return text
@@ -19,6 +36,60 @@ export default function LogWaste() {
         .replace(/\bfour\b/g, "4")
     };
 
+    const handleConfirmation = (text: string) => {
+        const lowerText = text.toLowerCase();
+      
+        if (lowerText.includes("repeat")) {
+            if (isSpeaking) return;
+
+            setIsSpeaking(true);
+            ExpoSpeechRecognitionModule.stop();
+          Speech.speak(getSummary(), {
+            language: "en-US",
+            onDone: () => {
+                ExpoSpeechRecognitionModule.start({
+                    lang: "en-Us",
+                    interimResults: false,
+                    continuous: true,
+                })
+            }
+          });
+          return;
+        }
+      
+        if (lowerText.includes("no")) {
+          setConfirmationMode(false);
+          setSpokenText("");
+      
+          Speech.speak("Okay, please log the waste again.", {
+            language: "en-US",
+          });
+      
+          ExpoSpeechRecognitionModule.start({
+            lang: "en-US",
+            interimResults: true,
+            continuous: true,
+          });
+      
+          return;
+        }
+      
+        if (lowerText.includes("yes")) {
+          Speech.speak("Waste saved.", {
+            language: "en-US",
+          });
+      
+          saveWaste();
+        }
+      };
+
+    const getSummary = () => {
+        return `You logged ${weight} kilo of ${product} for ${menuItem}. Is that correct?`;
+      };
+
+
+    
+
     const parseSpeech = (text: string) => {
         const lowerText = wordsToNumbers(
             text.toLowerCase()
@@ -26,10 +97,17 @@ export default function LogWaste() {
         
         if (lowerText.includes("stop")) {
             ExpoSpeechRecognitionModule.stop();
+            setConfirmationMode(true);
            
-            const summary = `You logged ${weight} kilo of ${product} when prepping ${menuItem}`;
-            Speech.speak(summary, {
+            Speech.speak(getSummary(), {
             language: "en-US",
+            onDone: () => {
+                ExpoSpeechRecognitionModule.start({
+                language: "en-Us",
+                interimResults: true,
+                continuous: true,
+            });
+            },
           }); 
           return;
         }
@@ -63,7 +141,12 @@ export default function LogWaste() {
       useSpeechRecognitionEvent("result", (event) => {
         const transcript = event.results[0]?.transcript || "";
         setSpokenText(transcript);
+
+        if (confirmationMode) {
+            handleConfirmation(transcript);
+        } else {
         parseSpeech(transcript);
+        }
       });
 
       useSpeechRecognitionEvent("error", (event) => {
