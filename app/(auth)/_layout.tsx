@@ -34,6 +34,10 @@ export default function RootLayout() {
       <Stack.Screen
         name = "kitchen/camera" options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name = "log-waste" options={{title: 'Log Waste'}}
+      />
     </Stack>
+    
   );
 }
