@@ -1,8 +1,8 @@
-import { Tabs, useRouter } from 'expo-router';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import AppHeader from '@/components/AppHeader';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import AppHeader from '@/components/AppHeader';
+import { Tabs, useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const ACTIVE_COLOR = '#0D7A5F';
 const INACTIVE_COLOR = '#888';
@@ -12,6 +12,7 @@ const TAB_ITEMS = [
     { key: 'index',     icon: 'home-outline',         label: 'Home'     },
     { key: 'settings',  icon: 'settings-outline',     label: 'Settings' },
     { key: 'profile',   icon: 'person-outline',       label: 'Profile'  },
+    { key: 'insights',   icon: 'stats-chart-outline',       label: 'Insights'  },
 ] as const;
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
@@ -61,6 +62,7 @@ export default function TabsLayout() {
             {/* Hidden from tab bar — navigated to via home screen cards */}
             <Tabs.Screen name="kitchen"   options={{ href: null, title: 'Kitchen' }}   />
             <Tabs.Screen name="inventory" options={{ href: null, title: 'Inventory' }} />
+            <Tabs.Screen name="insights" options={{ href: null, title: 'Insights' }} />
         </Tabs>
     );
 }
@@ -84,3 +86,4 @@ const styles = StyleSheet.create({
         fontSize: 11,
     },
 });
+
