@@ -22,7 +22,14 @@ export default function RootLayout() {
         name = "kitchen" options={{title: 'Kitchen View'}}
       />
       <Stack.Screen
-        name = "inventory" options={{title: 'Inventory'}}
+        name = "inventory/index" options={{title: 'Inventory Management'}}
+      />
+      <Stack.Screen
+        name = "inventory/swipe" options={{title: 'Swipe Ingredients'}}
+      />
+      <Stack.Screen
+        name="inventory/expiring"
+        options={{ title: 'Expiring Soon' }}
       />
     </Stack>
   );
