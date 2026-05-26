@@ -31,6 +31,9 @@ export default function RootLayout() {
         name="inventory/expiring"
         options={{ title: 'Expiring Soon' }}
       />
+      <Stack.Screen
+        name = "kitchen/camera" options={{ headerShown: false }}
+      />
     </Stack>
   );
 }
