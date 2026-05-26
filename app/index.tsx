@@ -1,4 +1,4 @@
-import Card from '@/components/Card';
+/*import Card from '@/components/Card';
 import { auth, signOutUser } from '@/config/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -16,9 +16,9 @@ export default function DashboardScreen() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
 
-            {/* Rad 1 */}
+            {/* Rad 1 }
             <View style={styles.row}>
-                {/* Insights-kort */}
+                {/* Insights-kort }
                 <Pressable style={styles.halfCard} onPress={() => router.push('/insights')}>
                     <Card style={styles.card}>
                         <View style={styles.cardHeader}>
@@ -31,7 +31,7 @@ export default function DashboardScreen() {
                     </Card>
                 </Pressable>
 
-                {/* Kitchen-kort */}
+                {/* Kitchen-kort }
                 <Pressable style={styles.halfCard} onPress={() => router.push('/kitchen')}>
                     <Card style={styles.card}>
                         <View style={styles.cardHeader}>
@@ -45,9 +45,9 @@ export default function DashboardScreen() {
                 </Pressable>
             </View>
 
-            {/* Rad 2 */}
+            {/* Rad 2 }
             <View style={styles.row}>
-                {/* Expiring soon */}
+                {/* Expiring soon }
                 <Pressable style={styles.halfCard}>
                     <Card style={styles.card}>
                         <View style={styles.cardHeader}>
@@ -57,7 +57,7 @@ export default function DashboardScreen() {
                     </Card>
                 </Pressable>
 
-                {/* Recipes */}
+                {/* Recipes }
                 <Pressable style={styles.halfCard}>
                     <Card style={styles.card}>
                         <View style={styles.cardHeader}>
@@ -68,7 +68,7 @@ export default function DashboardScreen() {
                 </Pressable>
             </View>
 
-            {/* Inventory - brett kort */}
+            {/* Inventory - brett kort }
             <Pressable onPress={() => router.push('/inventory')}>
                 <Card style={styles.wideCard}>
                     <View style={styles.cardHeader}>
@@ -80,7 +80,7 @@ export default function DashboardScreen() {
                 </Card>
             </Pressable>
 
-            {/* + knapp */}
+            {/* + knapp }
             <View style={styles.fabContainer}>
                 <Pressable style={styles.fab}>
                     <Ionicons name="add" size={32} color="#fff" />
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-});
+});*/

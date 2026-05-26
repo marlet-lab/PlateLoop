@@ -4,8 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const ACCENT = '#0D7A5F';
-const PURPLE = '#9B72CF';
+const signOut = () => {
+  router.push('/(noAuth)');
+  signOutUser(auth);
+};
 
 export default function DashboardScreen() {
     const signOut = () => {
@@ -15,8 +17,6 @@ export default function DashboardScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-
-            {/* Rad 1 */}
             <View style={styles.row}>
                 {/* Insights-kort */}
                 <Pressable style={styles.halfCard} onPress={() => router.push('/insights')}>
@@ -25,9 +25,7 @@ export default function DashboardScreen() {
                             <Text style={styles.cardTitle}>Insights</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
                         </View>
-                        <View style={styles.miniGraph}>
-                            <View style={styles.miniGraphLine} />
-                        </View>
+                        <View style={styles.imagePlaceholder} />
                     </Card>
                 </Pressable>
 
@@ -44,12 +42,11 @@ export default function DashboardScreen() {
                     </Card>
                 </Pressable>
             </View>
-
-            {/* Rad 2 */}
+            
             <View style={styles.row}>
                 {/* Expiring soon */}
-                <Pressable style={styles.halfCard}>
-                    <Card style={styles.card}>
+                <Pressable style={styles.halfCard} onPress={() => router.push('/expiring')}>
+                    <Card style={styles.smallCard}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Expiring soon</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -58,8 +55,8 @@ export default function DashboardScreen() {
                 </Pressable>
 
                 {/* Recipes */}
-                <Pressable style={styles.halfCard}>
-                    <Card style={styles.card}>
+                <Pressable style={styles.halfCard} onPress={() => router.push('/recipes')}>
+                    <Card style={styles.smallCard}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Recipes</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -68,7 +65,7 @@ export default function DashboardScreen() {
                 </Pressable>
             </View>
 
-            {/* Inventory - brett kort */}
+            {/* Inventory */}
             <Pressable onPress={() => router.push('/inventory')}>
                 <Card style={styles.wideCard}>
                     <View style={styles.cardHeader}>
@@ -95,7 +92,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         gap: 16,
-        backgroundColor: '#F0F4F3',
+        backgroundColor: '#F5FAF9',
         flexGrow: 1,
     },
     row: {
@@ -109,10 +106,13 @@ const styles = StyleSheet.create({
         gap: 12,
         padding: 16,
         alignItems: 'flex-start',
+        height: 180,
+        width: '100%',
     },
     wideCard: {
         padding: 16,
         alignItems: 'flex-start',
+        width: '100%',
     },
     cardHeader: {
         flexDirection: 'row',
@@ -124,19 +124,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
     },
-    miniGraph: {
-        width: '100%',
-        height: 80,
-        justifyContent: 'flex-end',
-    },
-    miniGraphLine: {
-        width: '100%',
-        height: 2,
-        backgroundColor: ACCENT,
-        borderRadius: 1,
-    },
+
     scanButton: {
-        backgroundColor: PURPLE,
+        backgroundColor: '#731AE8',
         borderRadius: 20,
         paddingVertical: 10,
         paddingHorizontal: 16,
@@ -146,7 +136,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     addButton: {
-        backgroundColor: ACCENT,
+        backgroundColor: '#005D47',
         borderRadius: 12,
         paddingVertical: 8,
         paddingHorizontal: 14,
@@ -160,11 +150,24 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     fab: {
-        backgroundColor: PURPLE,
+        backgroundColor: '#731AE8',
         width: 60,
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
     },
+
+    imagePlaceholder: {
+      width: '100%',
+      flex: 1,
+      backgroundColor: '#E8F5F1',
+      borderRadius: 12,
+  },
+
+  smallCard: {
+    padding: 16,
+    alignItems: 'flex-start',
+    width: '100%',
+},
 });

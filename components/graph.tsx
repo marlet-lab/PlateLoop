@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+/*import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-wagmi-charts';
 
 type GraphData = {
@@ -81,4 +81,4 @@ const styles = StyleSheet.create({
         marginTop: 5,
         fontSize: 14,
     },
-});
+});*/
