@@ -1,7 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from 'expo-router';
 import * as Speech from "expo-speech";
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
 import React, { useState } from 'react';
-import { Button, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function LogWaste() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -12,8 +14,12 @@ export default function LogWaste() {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [spokenText, setSpokenText] = useState("");
     const [confirmationMode, setConfirmationMode] = useState(false);
+    const navigation = useNavigation();
+    navigation.setOptions({ title: 'Dashboard' });
 
     const saveWaste = () => {
+        ExpoSpeechRecognitionModule.stop();
+
         console.log({
             product,
             weight,
@@ -75,7 +81,7 @@ export default function LogWaste() {
         }
       
         if (lowerText.includes("yes")) {
-          Speech.speak("Waste saved.", {
+          Speech.speak("Waste successfully logged.", {
             language: "en-US",
           });
       
@@ -168,51 +174,85 @@ export default function LogWaste() {
     };
 
     return (        
-        <View style={{flex: 1}}>
-           <Text> Log new waste</Text>
-            <Button title='Start' onPress={() => setModalVisible(true)} />
+        <View style={styles.container}>
+           <Text style={styles.title}>
+                Log food waste
+            </Text>
+            <Pressable
+            style ={styles.startButton}
+            onPress={() => setModalVisible(true)} 
+            >
+                <Text style = {styles.startButtonText}>Start</Text>
+            </Pressable>
             
             <Modal 
             visible = {modalVisible}
             transparent ={true}>
                 <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                <Text>Logging waste, you can use speech</Text>
+
+                <Text style={styles.modalTitle}>Log food waste</Text>
+                <Text style={styles.modalSubtitle}>
+                     Use voice commands or fill in the fields manually
+                </Text>
+
+                <View style={styles.formCard}>
+                <Text style={styles.label}>Product</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Product"
+                    placeholder="e.g Apple"
                     value = {product}
                     onChangeText={setProduct}
                 />
+                 </View>  
+
+                <View style={styles.formCard}>
+                <Text style={styles.label}>Weight</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Weight"
+                    placeholder="e.g 2.5"
                     value = {weight}
                     onChangeText={setWeight}
                 />
+                </View> 
+                
+                <View style={styles.formCard}>
+                <Text style={styles.label}>Menu item</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Menu Item"
+                    placeholder="e.g Apple pie"
                     value = {menuItem}
                     onChangeText={setMenuItem}
                 />
-            <Button 
-                title='Save' onPress={() => setModalVisible(false)} 
-            />
-            <Button
-                title={isListening ? "Listening..." : "Use speech"}
+                </View>
+                
+
+                <Pressable style={styles.saveButton} onPress={saveWaste}>
+                <Text style={styles.saveButtonText}>Save waste</Text>
+                </Pressable>
+
+            <Pressable
+                style = {[
+                    styles.micButton,
+                    isListening && styles.micButtonActive,
+                ]}
                 onPress={handleStart}
-              
-            />
-            <Button //för att testa mic
-             title="Stop speech"
-            onPress={() => ExpoSpeechRecognitionModule.stop()}
-            />
-
+              >
+                <Ionicons
+                name = {isListening ? "mic" : "mic-outline"}
+                size = {30}
+                
+                />
+                </Pressable>
+                <Text style={styles.listeningText}>
+                 {isListening ? "Listening..." : "Tap the mic and speak"}
+                </Text>
+        
              <Text>{spokenText}</Text>
-
+             </View>
+           
             </View>
-            </View>
+            
             </Modal>
 
          </View>
@@ -223,18 +263,22 @@ export default function LogWaste() {
 }
 
 const styles = StyleSheet.create({
-        container: {
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          padding: 20,
-        },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        padding: 20
+    },
+
         input: {
-          height: 40,
+          height: 48,
           margin: 12,
           borderWidth: 1,
+          borderColor: "#D1D1D1",
           padding: 10,
+          borderRadius: 12,
+          backgroundColor: "#F5FAF9"
         },
         
         centeredView: {
@@ -244,10 +288,91 @@ const styles = StyleSheet.create({
             backgroundColor: 'rgba(0,0,0,0.5)',
         },
         modalView: {
-            margin: 20,
-            backgroundColor: 'white',
-            alignItems: 'center',
+            width: "82%",
+            backgroundColor: "white",
+            borderRadius: 20,
+            alignItems: "center",
             padding: 25,
         },
 
+        modalTitle: {
+            fontSize: 26,
+            fontWeight: "700",
+            color: "#91B8AD",
+            marginBottom: 6,
+        },
+
+        modalSubtitle: {
+            fontSize: 14,
+            color: "#8B6F6F",
+            textAlign: "center",
+            marginBottom: 20,
+          },
+
+          saveButton: {
+            backgroundColor: "#006046",
+            paddingVertical: 14,
+            paddingHorizontal: 36,
+            borderRadius: 16,
+            minWidth: 180,
+            alignItems: "center",
+          },
+          
+          saveButtonText: {
+            color: "white",
+            fontSize: 16,
+            fontWeight: "700",
+          },
+
+        micButton: {
+            width: 70,
+            height: 70,
+            borderRadius: 35,
+            backgroundColor: "#C1A0F2",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 15,
+            marginBottom: 8,
+          },
+
+          micButtonActive: {
+            backgroundColor: "#C62828",
+          },
+          listeningText: {
+            fontSize: 16,
+            color: "#555",
+            marginBottom: 10,
+          },
+
+          title: {
+            fontSize: 28,
+            fontWeight: "bold",
+            color: "#93BBB2",
+            marginBottom: 15,
+            alignItems: "center",
+            justifyContent: "center",
+          },
+
+          startButton: {
+            backgroundColor: "#006046",
+            borderRadius: 24,
+            paddingVertical: 20,
+            paddingHorizontal: 60,
+            alignItems: "center",
+          },
+
+          startButtonText: {
+            color: "white",
+            fontSize: 24,
+          },
+
+          formCard: {
+            width: "100%",
+            backgroundColor: "#FFFFFF",
+            borderRadius: 18,
+            padding: 10,
+            marginBottom: 22,
+            borderColor: "#D7E2DF",
+            borderWidth: 1,
+          }
 }); 
