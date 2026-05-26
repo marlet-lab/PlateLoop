@@ -39,10 +39,6 @@ const Index = () => {
 
       <Button title="Login" onPress={handleLogin} />
       <Button title="Don't have an account? Sign Up" onPress={handleSignUp} />
-      <Button 
-           title="Log waste" 
-           onPress={() => router.push('/log-waste')}
-        />
     </View>
   );
 };

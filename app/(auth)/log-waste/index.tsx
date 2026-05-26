@@ -365,6 +365,9 @@ const styles = StyleSheet.create({
             color: "white",
             fontSize: 24,
           },
+          label: {
+
+          },
 
           formCard: {
             width: "100%",
