@@ -2,7 +2,7 @@ import Card from '@/components/Card';
 import { auth, signOutUser } from '@/config/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const signOut = () => {
   router.push('/(noAuth)');
@@ -25,13 +25,17 @@ export default function DashboardScreen() {
                             <Text style={styles.cardTitle}>Insights</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
                         </View>
-                        <View style={styles.imagePlaceholder} />
+                        <Image 
+                        source={require('@/assets/images/GraphImage.png')}
+                        style={styles.graphImage}
+                        resizeMode="cover"
+                        />
                     </Card>
                 </Pressable>
 
                 {/* Kitchen-kort */}
                 <Pressable style={styles.halfCard} onPress={() => router.push('/kitchen')}>
-                    <Card style={styles.card}>
+                    <Card style={[styles.card, { justifyContent: 'flex-start' }, { justifyContent: 'space-between' }]}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Kitchen view</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
         gap: 12,
         padding: 16,
         alignItems: 'flex-start',
-        height: 180,
+        height: 250,
         width: '100%',
     },
     wideCard: {
@@ -158,16 +162,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
-    imagePlaceholder: {
+    graphImage: {
       width: '100%',
       flex: 1,
-      backgroundColor: '#E8F5F1',
       borderRadius: 12,
   },
 
-  smallCard: {
-    padding: 16,
-    alignItems: 'flex-start',
-    width: '100%',
-},
+    smallCard: {
+        padding: 16,
+        alignItems: 'flex-start',
+        width: '100%',
+    },
 });
