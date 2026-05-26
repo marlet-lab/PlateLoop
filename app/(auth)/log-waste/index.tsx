@@ -109,7 +109,7 @@ export default function LogWaste() {
             language: "en-US",
             onDone: () => {
                 ExpoSpeechRecognitionModule.start({
-                language: "en-Us",
+                lang: "en-Us",
                 interimResults: true,
                 continuous: true,
             });

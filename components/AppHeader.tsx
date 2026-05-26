@@ -7,12 +7,14 @@ type AppHeaderProps = {
     title: string;
     canGoBack?: boolean;
     logoSource?: ImageSourcePropType;
+    onNotificationPress?: () => void;
 };
 
 export default function AppHeader({
     title,
     canGoBack = false,
     logoSource,
+    onNotificationPress 
 }: AppHeaderProps) {
     const router = useRouter();
     return (
@@ -37,7 +39,7 @@ export default function AppHeader({
                 <Pressable>
                     <Ionicons name="settings-outline" size={24} color="#0D7A5F" />
                 </Pressable>
-                <Pressable>
+                <Pressable onPress={onNotificationPress}>
                     <Ionicons name="notifications-outline" size={24} color="#0D7A5F" />
                 </Pressable>
             </Card>

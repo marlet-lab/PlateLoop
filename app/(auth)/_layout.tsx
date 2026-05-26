@@ -16,7 +16,7 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen 
-        name = "index" options={{ title: 'PlateLoop (home)' }}
+        name = "index" options={{ title: 'PlateLoop (home)', headerShown: false}}
       />  
       <Stack.Screen 
         name = "kitchen" options={{title: 'Kitchen View'}}
