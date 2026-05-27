@@ -16,17 +16,28 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen 
-        name = "index" options={{ title: 'PlateLoop (home)' }}
+        name = "index" options={{ title: 'PlateLoop (home)', headerShown: false}}
       />  
       <Stack.Screen 
         name = "kitchen" options={{title: 'Kitchen View'}}
       />
       <Stack.Screen
-        name = "inventory" options={{title: 'Inventory'}}
+        name = "inventory/index" options={{title: 'Inventory Management'}}
+      />
+      <Stack.Screen
+        name = "inventory/swipe" options={{title: 'Swipe Ingredients'}}
+      />
+      <Stack.Screen
+        name="inventory/expiring"
+        options={{ title: 'Expiring Soon' }}
       />
       <Stack.Screen
         name = "kitchen/camera" options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name = "log-waste" options={{title: 'Log Waste'}}
+      />
     </Stack>
+    
   );
 }
