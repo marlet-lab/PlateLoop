@@ -96,13 +96,37 @@ export default function NotificationModal({ visible, onClose }: { visible: boole
     if (!visible) return;
     
     setLoading(true);
-    Promise.all([fetchWeather('Perth,AU'), fetchPastWeek(-31.9505, 115.8605)])
-      .then(([today, pastDays]) => setItems([
-        { id: 0, isReal: true, weather: `${today.description}, ${today.temp}°C`, tip: getTip(today.description), timeLabel: 'Today' },
-...pastDays.map((d, i) => ({ id: i + 1, isReal: true, weather: d.description, tip: getTip(d.description), timeLabel: d.timeLabel }))
-      ]))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
+    // NotificationModal.tsx — in useEffect
+Promise.allSettled([fetchWeather('Perth,AU'), fetchPastWeek(-31.9505, 115.8605)])
+  .then(([todayResult, pastResult]) => {
+    const newItems: Item[] = [];
+
+    if (todayResult.status === 'fulfilled') {
+      const today = todayResult.value;
+      newItems.push({
+        id: 0,
+        isReal: true,
+        weather: `${today.description}, ${today.temp}°C`,
+        tip: getTip(today.description),
+        timeLabel: 'Today',
+      });
+    }
+
+    if (pastResult.status === 'fulfilled') {
+      pastResult.value.forEach((d, i) =>
+        newItems.push({
+          id: i + 1,
+          isReal: true,
+          weather: d.description,
+          tip: getTip(d.description),
+          timeLabel: d.timeLabel,
+        })
+      );
+    }
+
+    setItems(newItems);
+  })
+  .finally(() => setLoading(false));
   }, [visible]);
 
   return (

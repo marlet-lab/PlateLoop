@@ -1,10 +1,26 @@
+import AppHeader from '@/components/AppHeader';
 import Card from '@/components/Card';
-import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import NotificationModal from '@/components/NotificationModal';
+import { Stack, router } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, View, } from 'react-native';
 
 export default function KitchenScreen() {
+    const [notifVisible, setNotifVisible] = useState(false);
     return (
         <View style={styles.container}>
+            <Stack.Screen
+                options={{
+                    header: ({ navigation }) => (
+                        <AppHeader
+                            title="Kitchen View"
+                            canGoBack={navigation.canGoBack()}
+                            onNotificationPress={() => setNotifVisible(true)}
+                        />
+                    ),
+                }}
+            />
+
             <Pressable onPress={() => router.push('/inventory')}>
                 {({ pressed }) => (
                     <Card style={[styles.cardButton, pressed && styles.cardButtonPressed]}>
@@ -34,6 +50,7 @@ export default function KitchenScreen() {
                     </Card>
                 )}
             </Pressable>
+            <NotificationModal visible={notifVisible} onClose={() => setNotifVisible(false)} />
         </View>
     );
 }
@@ -61,4 +78,9 @@ const styles = StyleSheet.create({
     buttonTextPressed: {
         color: '#FFFFFF',
     },
+    headerWrapper: {
+    width: '100%',
+    height: 100,        
+    flexShrink: 0,
+  },
 });
