@@ -1,3 +1,4 @@
+import LogWasteModal from '@/components/LogWasteModal';
 import { auth, signOutUser } from '@/config/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -7,8 +8,7 @@ import Card from '../../components/Card';
 
   
 export default function DashboardScreen() {
-    const [notifVisible, setNotifVisible] = useState(false);
-
+    const [logWasteVisible, setLogWasteVisible] = useState(false);
     const signOut = () => {
         router.push('/(noAuth)');
         signOutUser(auth);
@@ -82,10 +82,15 @@ export default function DashboardScreen() {
 
             {/* + knapp */}
             <View style={styles.fabContainer}>
-                <Pressable style={styles.fab}>
+                <Pressable style={styles.logWasteButton}
+                onPress={() => setLogWasteVisible(true)}>
                     <Ionicons name="add" size={32} color="#fff" />
                 </Pressable>
             </View>
+
+            <LogWasteModal
+            visible={logWasteVisible}
+            onClose={() => setLogWasteVisible(false)} />
 
         </ScrollView>
     );
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 8,
     },
-    fab: {
+    logWasteButton: {
         backgroundColor: '#731AE8',
         width: 60,
         height: 60,
