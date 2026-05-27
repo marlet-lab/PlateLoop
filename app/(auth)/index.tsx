@@ -1,6 +1,8 @@
+import AppHeader from '@/components/AppHeader';
+import NotificationModal from '@/components/NotificationModal';
 import { auth, signOutUser } from '@/config/firebase';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Card from '../../components/Card';
@@ -15,7 +17,18 @@ export default function DashboardScreen() {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>    
+        <Stack.Screen
+                        options={{
+                            header: ({ navigation }) => (
+                                <AppHeader
+                                    title="Kitchen View"
+                                    canGoBack={navigation.canGoBack()}
+                                    onNotificationPress={() => setNotifVisible(true)}
+                                />
+                            ),
+                        }}
+                    />        
             <View style={styles.row}>
                 {/* Insights-kort */}
                 <Pressable style={styles.halfCard}>
@@ -86,7 +99,7 @@ export default function DashboardScreen() {
                     <Ionicons name="add" size={32} color="#fff" />
                 </Pressable>
             </View>
-
+            <NotificationModal visible={notifVisible} onClose={() => setNotifVisible(false)} />
         </ScrollView>
     );
 }
