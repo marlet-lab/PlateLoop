@@ -116,6 +116,8 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        gap: 16,
+        marginTop: 16,
     },
     card: {
         gap: 12,
