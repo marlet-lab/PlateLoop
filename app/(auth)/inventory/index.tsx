@@ -92,13 +92,13 @@ const ExpiringItemCard = ({ item }: { item: InventoryItem }) => {
               style={[styles.actionChip, styles.recipeChip]}
               onPress={() => Alert.alert('Use in recipe', item.name)}
             >
-              <Text style={[styles.actionChipText, { color: '#0F6E56' }]}>🍳 Use in recipe</Text>
+              <Text style={[styles.actionChipText, { color: '#0F6E56' }]}> Use in recipe</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionChip, styles.freezeChip]}
               onPress={() => Alert.alert('Freeze', item.name)}
             >
-              <Text style={[styles.actionChipText, { color: '#185FA5' }]}>❄️ Freeze</Text>
+              <Text style={[styles.actionChipText, { color: '#185FA5' }]}> Freeze</Text>
             </TouchableOpacity>
           </>
         )}
@@ -106,13 +106,13 @@ const ExpiringItemCard = ({ item }: { item: InventoryItem }) => {
           style={[styles.actionChip, styles.staffChip]}
           onPress={() => Alert.alert('Staff food', item.name)}
         >
-          <Text style={[styles.actionChipText, { color: '#3B6D11' }]}>👥 Staff food</Text>
+          <Text style={[styles.actionChipText, { color: '#3B6D11' }]}> Staff food</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionChip, styles.wasteChip]}
           onPress={() => Alert.alert('Log waste', item.name)}
         >
-          <Text style={[styles.actionChipText, { color: '#A32D2D' }]}>🗑 Log waste</Text>
+          <Text style={[styles.actionChipText, { color: '#A32D2D' }]}> Log waste</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -257,7 +257,7 @@ export default function InventoryScreen() {
         </View>
 
         {activeTab === 'expiring' ? (
-          <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false}>
 
              {/* Stats */}
             <View style={styles.statsRow}>
@@ -307,10 +307,10 @@ export default function InventoryScreen() {
             <View style={styles.legend}>
                 <Text style={styles.legendTitle}>What do the actions mean?</Text>
                 {[
-                    { icon: '🍳', label: 'Use in recipe', desc: 'Generates a recipe suggestion using this ingredient' },
-                    { icon: '❄️', label: 'Freeze',        desc: 'Moves item to frozen storage and extends expiry date' },
-                    { icon: '👥', label: 'Staff food',    desc: 'Marks item as used for staff meals, logged in insights' },
-                    { icon: '🗑',  label: 'Log waste',    desc: 'Removes item and logs it as food waste in insights' },
+                    { icon: '', label: 'Use in recipe', desc: 'Generates a recipe suggestion using this ingredient' },
+                    { icon: '', label: 'Freeze',        desc: 'Moves item to frozen storage and extends expiry date' },
+                    { icon: '', label: 'Staff food',    desc: 'Marks item as used for staff meals, logged in insights' },
+                    { icon: '',  label: 'Log waste',    desc: 'Removes item and logs it as food waste in insights' },
                 ].map(row => (
                     <View key={row.label} style={styles.legendRow}>
                     <Text style={styles.legendIcon}>{row.icon}</Text>
@@ -324,80 +324,80 @@ export default function InventoryScreen() {
             <View style={{ height: 24 }} />
 
 
-          </ScrollView>
+        </ScrollView>
 
         ) : (
-          <>
+        <>
             <View style={styles.toolbar}>
-              <View style={styles.spacer} />
-              <View style={styles.searchBox}>
-                <Text style={styles.searchIcon}> </Text>
-                <Text style={styles.searchPlaceholder}>Search</Text>
-              </View>
-              <TouchableOpacity style={styles.exportBtn}>
-                <Text style={styles.exportText}>Export ▾</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.scanBtn}>
-                <Text style={styles.scanText}>Scan GRN </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.addBtn}
-                onPress={() => router.push('/inventory/swipe')}
-              >
-                <Text style={styles.addText}>+ Add Item</Text>
-              </TouchableOpacity>
+                <View style={styles.spacer} />
+                <View style={styles.searchBox}>
+                    <Text style={styles.searchIcon}> </Text>
+                    <Text style={styles.searchPlaceholder}>Search</Text>
+                </View>
+                <TouchableOpacity style={styles.exportBtn}>
+                    <Text style={styles.exportText}>Export ▾</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.scanBtn}>
+                    <Text style={styles.scanText}>Scan GRN </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.addBtn}
+                    onPress={() => router.push('/inventory/swipe')}
+                >
+                    <Text style={styles.addText}>+ Add Item</Text>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.tableHeader}>
-              <View style={styles.checkboxCol} />
-              <Text style={[styles.headerCell, styles.codeCol]}>Item Code.</Text>
-              <Text style={[styles.headerCell, { width: 60 }]}>Photo</Text>
-              <Text style={[styles.headerCell, styles.nameCol]}>Item Name</Text>
-              <Text style={[styles.headerCell, styles.groupCol]}>Item Group</Text>
-              <Text style={[styles.headerCell, styles.dateCol]}>Last Purchase</Text>
-              <Text style={[styles.headerCell, styles.quantityCol]}>On Hand</Text>
-              <Text style={[styles.headerCell, styles.actionCol]}>Action</Text>
-            </View>
+                <View style={styles.checkboxCol} />
+                    <Text style={[styles.headerCell, styles.codeCol]}>Item Code.</Text>
+                    <Text style={[styles.headerCell, { width: 60 }]}>Photo</Text>
+                    <Text style={[styles.headerCell, styles.nameCol]}>Item Name</Text>
+                    <Text style={[styles.headerCell, styles.groupCol]}>Item Group</Text>
+                    <Text style={[styles.headerCell, styles.dateCol]}>Last Purchase</Text>
+                    <Text style={[styles.headerCell, styles.quantityCol]}>On Hand</Text>
+                    <Text style={[styles.headerCell, styles.actionCol]}>Action</Text>
+                </View>
 
             {loading ? (
-              <View style={styles.center}>
-                <Text style={styles.loadingText}>Loading...</Text>
-              </View>
+                <View style={styles.center}>
+                    <Text style={styles.loadingText}>Loading...</Text>
+                </View>
             ) : filteredItems.length === 0 ? (
-              <View style={styles.center}>
-                <Text style={{ fontSize: 40, marginBottom: 12 }}></Text>
-                <Text style={styles.emptyTitle}>No items found</Text>
-                <Text style={styles.emptySubtitle}>
+                <View style={styles.center}>
+                    <Text style={{ fontSize: 40, marginBottom: 12 }}></Text>
+                    <Text style={styles.emptyTitle}>No items found</Text>
+                    <Text style={styles.emptySubtitle}>
                   {activeTab === 'lowStock' ? 'All ingredients are well stocked' : ''}
-                </Text>
-              </View>
+                        </Text>
+                </View>
             ) : (
-              <FlatList
-                data={filteredItems}
-                keyExtractor={item => item.id}
-                renderItem={renderItem}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
-                showsVerticalScrollIndicator={false}
-              />
+                <FlatList
+                    data={filteredItems}
+                    keyExtractor={item => item.id}
+                    renderItem={renderItem}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />}
+                    showsVerticalScrollIndicator={false}
+                />
             )}
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>
-                Showing {filteredItems.length} of {items.length} entries
-              </Text>
+                <Text style={styles.footerText}>
+                    Showing {filteredItems.length} of {items.length} entries
+                </Text>
             </View>
-          </>
+        </>
         )}
-      </View>
+    </View>
 
-      <Modal
+    <Modal
         visible={editItem !== null}
         transparent
         animationType="fade"
         onRequestClose={closeEdit}
-      >
+    >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalOverlay}
         >
           <View style={styles.modalCard}>

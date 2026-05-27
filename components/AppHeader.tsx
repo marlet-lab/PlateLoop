@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        backgroundColor: '#F3F7F5',
     },
     sideCardLeft: {
         flexDirection: 'row',
