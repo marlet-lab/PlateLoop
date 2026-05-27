@@ -5,11 +5,10 @@ import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Card from '../../components/Card';
 
-const index = () => {
-  const [notifVisible, setNotifVisible] = useState(false);
-};
   
 export default function DashboardScreen() {
+    const [notifVisible, setNotifVisible] = useState(false);
+
     const signOut = () => {
         router.push('/(noAuth)');
         signOutUser(auth);
