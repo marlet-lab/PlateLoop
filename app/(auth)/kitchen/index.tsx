@@ -1,7 +1,9 @@
+import AppHeader from '@/components/AppHeader';
 import Card from '@/components/Card';
+import NotificationModal from '@/components/NotificationModal';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { Stack, router } from 'expo-router';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const attentionItems = [
@@ -28,6 +30,18 @@ export default function KitchenScreen() {
     const [notifVisible, setNotifVisible] = useState(false);
     return (
         <View style={styles.container}>
+            <Stack.Screen
+                options={{
+                    header: ({ navigation }) => (
+                        <AppHeader
+                            title="Kitchen View"
+                            canGoBack={navigation.canGoBack()}
+                            onNotificationPress={() => setNotifVisible(true)}
+                        />
+                    ),
+                }}
+            />
+
             {/* Left column */}
             <View style={styles.leftColumn}>
                 <Pressable onPress={() => router.push('/kitchen/camera')}>
@@ -91,6 +105,8 @@ export default function KitchenScreen() {
                     ))}
                 </Card>
             </View>
+
+            <NotificationModal visible={notifVisible} onClose={() => setNotifVisible(false)} />
         </View>
     );
 }
