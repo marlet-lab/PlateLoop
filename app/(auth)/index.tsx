@@ -5,7 +5,7 @@ import { auth, signOutUser } from '@/config/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Card from '../../components/Card';
 
   
@@ -16,15 +16,19 @@ export default function DashboardScreen() {
         router.push('/(noAuth)');
         signOutUser(auth);
     };
+    const { width, height } = useWindowDimensions();
+    const cardHeight = height * 0.4;
+    const smallCardHeight = height * 0.12;
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>    
+        <ScrollView style={{backgroundColor: '#F5FAF9'}} contentContainerStyle={styles.container}>    
         <Stack.Screen
                         options={{
                             header: ({ navigation }) => (
                                 <AppHeader
-                                    title="Kitchen View"
+                                    title="PlateLoop (home)"
                                     canGoBack={navigation.canGoBack()}
+                                    logoSource={require('@/assets/images/logo_1.png')}
                                     onNotificationPress={() => setNotifVisible(true)}
                                 />
                             ),
@@ -33,7 +37,7 @@ export default function DashboardScreen() {
             <View style={styles.row}>
                 {/* Insights-kort */}
                 <Pressable style={styles.halfCard}>
-                    <Card style={styles.card}>
+                    <Card style={[styles.card, { height: cardHeight }]}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Insights</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -48,7 +52,7 @@ export default function DashboardScreen() {
 
                 {/* Kitchen-kort */}
                 <Pressable style={styles.halfCard} onPress={() => router.push('/kitchen')}>
-                    <Card style={[styles.card, { justifyContent: 'flex-start' }, { justifyContent: 'space-between' }]}>
+                    <Card style={[styles.card, { height: cardHeight }, { justifyContent: 'flex-start' }, { justifyContent: 'space-between' }]}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Kitchen view</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -63,7 +67,7 @@ export default function DashboardScreen() {
             <View style={styles.row}>
                 {/* Expiring soon */}
                 <Pressable style={styles.halfCard} >
-                    <Card style={styles.smallCard}>
+                    <Card style={[styles.smallCard, { height: smallCardHeight }]}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Expiring soon</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -73,7 +77,7 @@ export default function DashboardScreen() {
 
                 {/* Recipes */}
                 <Pressable style={styles.halfCard} >
-                    <Card style={styles.smallCard}>
+                    <Card style={[styles.smallCard, { height: smallCardHeight }]}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.cardTitle}>Recipes</Text>
                             <Ionicons name="arrow-forward" size={20} color="#000" />
@@ -84,7 +88,7 @@ export default function DashboardScreen() {
 
             {/* Inventory */}
             <Pressable onPress={() => router.push('/inventory')}>
-                <Card style={styles.wideCard}>
+                <Card style={[styles.wideCard, { height: smallCardHeight }]}>
                     <View style={styles.cardHeader}>
                         <Text style={styles.cardTitle}>Inventory</Text>
                         <Pressable style={styles.addButton}>
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
         gap: 12,
         padding: 16,
         alignItems: 'flex-start',
-        height: 250,
+        //height: 300,
         width: '100%',
     },
     wideCard: {
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         gap: 10,
-        //padding: 20
+        width: '100%',
     },
     cardTitle: {
         fontSize: 18,
@@ -193,5 +197,6 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         gap: 16,
+        width: '100%',
     },
 });
